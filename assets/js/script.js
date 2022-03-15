@@ -33,6 +33,7 @@ var loadTasks = function() {
 
   // loop over object properties
   $.each(tasks, function(list, arr) {
+    console.log(list, arr);
     // then loop over sub-array
     arr.forEach(function(task) {
       createTask(task.text, task.date, list);
@@ -43,6 +44,9 @@ var loadTasks = function() {
 var saveTasks = function() {
   localStorage.setItem("tasks", JSON.stringify(tasks));
 };
+
+
+
 
 // modal was triggered
 $("#task-form-modal").on("show.bs.modal", function() {
@@ -74,14 +78,13 @@ $("#task-form-modal .btn-primary").click(function() {
       date: taskDate
     });
 
-    saveTasks();  
-    
+    saveTasks();
   }
 });
 
-//edit tasks
-
+// task text was clicked
 $(".list-group").on("click", "p", function() {
+  // get current text of p element
   var text = $(this)
     .text()
     .trim();
@@ -90,13 +93,16 @@ $(".list-group").on("click", "p", function() {
   var textInput = $("<textarea>").addClass("form-control").val(text);
   $(this).replaceWith(textInput);
 
-  //auto focus new element
+  // auto focus new element
   textInput.trigger("focus");
 });
 
-$("list-group").on("blur", "textarea", function () {
+// editable field was un-focused
+$(".list-group").on("blur", "textarea", function() {
+  // get current value of textarea
   var text = $(this).val();
-  
+
+  // get status type and position in the list
   var status = $(this)
     .closest(".list-group")
     .attr("id")
@@ -105,15 +111,16 @@ $("list-group").on("blur", "textarea", function () {
     .closest(".list-group-item")
     .index();
 
+  // update task in array and re-save to localstorage
   tasks[status][index].text = text;
   saveTasks();
 
-  //recreate p element
+  // recreate p element
   var taskP = $("<p>")
     .addClass("m-1")
     .text(text);
 
-  // replace textarea with p element
+  // replace textarea with new content
   $(this).replaceWith(taskP);
 });
 
@@ -123,17 +130,19 @@ $(".list-group").on("click", "span", function() {
   var date = $(this)
     .text()
     .trim();
-  //create new input element
+
+  // create new input element
   var dateInput = $("<input>")
-  .attr("type", "text")
-  .addClass("form-control")
-  .val(date);
+    .attr("type", "text")
+    .addClass("form-control")
+    .val(date);
   $(this).replaceWith(dateInput);
 
-  //automatically bring up the calendar
+  // automatically bring up the calendar
   dateInput.trigger("focus");
 });
 
+// value of due date was changed
 $(".list-group").on("blur", "input[type='text']", function() {
   var date = $(this).val();
 
@@ -165,8 +174,6 @@ $("#remove-tasks").on("click", function() {
   }
   saveTasks();
 });
-
-
 
 // load tasks for the first time
 loadTasks();
